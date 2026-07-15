@@ -8,7 +8,7 @@
 [[plugin]]
 id = "neuro/upbeat"
 name = "Upbeat"
-version = "1.0.0"
+version = "1.0.1"
 author = "neuro"
 license = "MIT"
 icon = "at"
@@ -42,7 +42,7 @@ tags = ["wallpaper", "desktop"]
 [[plugin]]
 id = "joshuaslate/shelly"
 name = "Shelly"
-version = "1.0.0"
+version = "1.0.1"
 author = "joshuaslate"
 license = "MIT"
 icon = "package"
@@ -65,7 +65,7 @@ tags = ["launcher"]
 [[plugin]]
 id = "gambled23/mangowm-keymode"
 name = "Mangowm Keymode"
-version = "1.0.0"
+version = "1.0.1"
 author = "gambled23"
 license = "MIT"
 icon = "keyboard"
@@ -77,7 +77,7 @@ tags = ["bar", "mangowc"]
 [[plugin]]
 id = "oldirtty/color_picker"
 name = "Color Picker"
-version = "1.0.0"
+version = "1.0.1"
 author = "oldirtty"
 license = "MIT"
 icon = "palette"
