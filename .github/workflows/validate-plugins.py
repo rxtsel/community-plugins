@@ -13,6 +13,45 @@ from typing import Any
 
 DEFAULT_ROOT = Path(__file__).resolve().parents[2]
 SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
+LAUNCHER_PREFIX_RE = re.compile(r"^[a-z]+$")
+ALLOWED_TAGS = {
+    "ai",
+    "animation",
+    "audio",
+    "bar",
+    "clock",
+    "countdown",
+    "demo",
+    "desktop",
+    "development",
+    "emoticon",
+    "fun",
+    "gaming",
+    "hardware",
+    "hyprland",
+    "indicator",
+    "labwc",
+    "language",
+    "launcher",
+    "mangowc",
+    "media",
+    "music",
+    "network",
+    "niri",
+    "panel",
+    "privacy",
+    "productivity",
+    "recording",
+    "service",
+    "shortcut",
+    "sway",
+    "system",
+    "theming",
+    "time",
+    "utility",
+    "video",
+    "wallpaper",
+}
 
 # An id segment must be a lowercase flat identifier: the part after the "/" is also the
 # plugin's directory here, its export directory on disk, and its slug on the website.
@@ -312,6 +351,19 @@ class Validator:
                 self.add_context_error(manifest_path, context, f"{field} contains duplicate '{item}'")
             seen.add(item)
 
+    def validate_tags(self, manifest_path: Path, value: Any) -> None:
+        self.validate_string_list(manifest_path, "root", "tags", value, allow_empty=False)
+        if not isinstance(value, list):
+            return
+
+        for index, tag in enumerate(value):
+            if is_non_empty_string(tag) and tag not in ALLOWED_TAGS:
+                self.add_context_error(
+                    manifest_path,
+                    "root",
+                    f"tags[{index}] '{tag}' is not an allowed tag",
+                )
+
     def validate_root_fields(self, manifest_path: Path, manifest: dict[str, Any]) -> None:
         unknown = sorted(set(manifest) - ROOT_FIELDS)
         for field in unknown:
@@ -337,7 +389,7 @@ class Validator:
             )
 
         if "tags" in manifest:
-            self.validate_string_list(manifest_path, "root", "tags", manifest["tags"], allow_empty=False)
+            self.validate_tags(manifest_path, manifest["tags"])
 
         if "deprecated" in manifest and not isinstance(manifest["deprecated"], bool):
             self.add_error(manifest_path, "root field 'deprecated' must be a bool")
@@ -393,6 +445,14 @@ class Validator:
         for field in ("prefix", "glyph"):
             if field in entry and not is_non_empty_string(entry[field]):
                 self.add_context_error(manifest_path, context, f"{field} must be a non-empty string")
+
+        prefix = entry.get("prefix")
+        if is_non_empty_string(prefix) and not LAUNCHER_PREFIX_RE.fullmatch(prefix):
+            self.add_context_error(
+                manifest_path,
+                context,
+                "prefix must contain only lowercase letters (a-z), without a leading symbol",
+            )
 
         if "include_in_global_search" in entry and not isinstance(entry["include_in_global_search"], bool):
             self.add_context_error(
